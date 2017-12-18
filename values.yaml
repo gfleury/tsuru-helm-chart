@@ -6,7 +6,7 @@ replicas:
 image:
   repository: gfleury/tsuru-api 
   tag: latest 
-  pullPolicy: IfNotPresent
+  pullPolicy: Always 
 service:
   name: nginx
   type: ClusterIP

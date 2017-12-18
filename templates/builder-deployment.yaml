@@ -21,6 +21,7 @@ spec:
       containers:
         - name: docker-cmds
           image: docker:stable
+          imagePullPolicy: Always
           command: ['docker', 'run', '-p', '80:80', 'httpd:latest']
           resources:
             requests:  
@@ -33,6 +34,7 @@ spec:
               value: tcp://localhost:2375
         - name: dind-daemon
           image: docker:stable-dind
+          imagePullPolicy: Always
           args: ['--insecure-registry={{ .Release.Name }}-docker-registry:5000']
           resources:
               requests:
