@@ -1,0 +1,493 @@
+##
+## Default values for tsuru.
+##
+replicas: 
+  router: 1 
+image:
+  repository: gfleury/tsuru-api 
+  tag: latest 
+  pullPolicy: IfNotPresent
+service:
+  name: nginx
+  type: ClusterIP
+  port: 8080
+  externalPort: 8080
+ingress:
+  enabled: true 
+  # Used to create an Ingress record.
+  hosts:
+    - tsuru.local
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  tls:
+    # Secrets must be manually created in the namespace.
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+
+
+##
+## MongoDB Confinguration Values
+##
+mongodb-replicaset:
+  replicaSet: rs0
+  replicas: 3
+  port: 27017
+
+  auth:
+    enabled: false
+    # adminUser: username
+    # adminPassword: password
+    # key: keycontent
+    # existingKeySecret:
+    # existingAdminSecret:
+
+  # Specs for the Docker image for the init container that establishes the replica set
+  installImage:
+    name: gcr.io/google_containers/mongodb-install 
+    tag: 0.5
+    pullPolicy: IfNotPresent
+
+  # Specs for the MongoDB image
+  image:
+    name: mongo
+    tag: 3.4
+    pullPolicy: IfNotPresent
+
+  # Annotations to be added to MongoDB pods
+  podAnnotations: {}
+
+  podAntiAffinity: "soft"
+
+  resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+  ## Node selector
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+  nodeSelector: {}
+
+  persistentVolume:
+    enabled: true
+    ## mongodb-replicaset data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    annotations: {}
+
+  # Annotations to be added to the service
+  serviceAnnotations: {}
+
+  tls:
+    # Enable or disable MongoDB TLS support
+    enabled: false
+    # Please generate your own TLS CA by generating it via:
+    # $ openssl genrsa -out ca.key 2048
+    # $ openssl req -x509 -new -nodes -key ca.key -days 10000 -out ca.crt -subj "/CN=mydomain.com"
+    # After that you can base64 encode it and paste it here:
+    # $ cat ca.key | base64 -w0
+    # cacert:
+    # cakey:
+
+  # Entries for the MongoDB config file
+  configmap:
+    storage:
+      dbPath: /data/db
+    net:
+      port: 27017
+      # Uncomment for TLS support
+      # ssl:
+      #   mode: requireSSL
+      #   CAFile: /ca/tls.crt
+      #   PEMKeyFile: /work-dir/mongo.pem
+    replication:
+      replSetName: rs0
+    # Uncomment for TLS support or keyfile access control without TLS
+    # security:
+    #   authorization: enabled
+    #   keyFile: /keydir/key.txt
+
+
+##
+## Docker registry configuration values
+##
+docker-registry:
+  # Default values for docker-registry.
+  # This is a YAML-formatted file.
+  # Declare variables to be passed into your templates.
+  replicaCount: 1
+  image:
+    repository: registry
+    tag: 2.6.2
+    pullPolicy: IfNotPresent
+  service:
+    name: registry
+    type: ClusterIP
+    port: 5000
+  ingress:
+    enabled: true 
+    # Used to create an Ingress record.
+    hosts:
+      - registry.local
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    tls:
+      # Secrets must be manually created in the namespace.
+      # - secretName: registry-tls
+      #   hosts:
+      #     - registry.local
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  persistence:
+    accessMode: 'ReadWriteOnce'
+    enabled: false
+    size: 10Gi
+    # storageClass: '-'
+
+  # set the type of filesystem to use
+  storage: filesystem
+
+  # Set this to name of secret for tls certs
+  # tlsSecretName: registry.docker.example.com
+  secrets:
+    haSharedSecret: ""
+  # Secrets for S3 access and secret keys
+  #   s3:
+  #     accessKey: ""
+  #     secretKey: ""
+  configData:
+    version: 0.1
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    http:
+      addr: :5000
+      headers:
+        X-Content-Type-Options: [nosniff]
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+  threshold: 3
+
+## nginx configuration
+## Ref: https://github.com/kubernetes/ingress/blob/master/controllers/nginx/configuration.md
+##
+nginx-ingress:
+  controller:
+    name: controller
+    image:
+      repository: gcr.io/google_containers/nginx-ingress-controller
+      tag: "0.9.0-beta.15"
+      pullPolicy: IfNotPresent
+
+    config: {}
+
+    # Required for use with CNI based kubernetes installations (such as ones set up by kubeadm),
+    # since CNI and hostport don't mix yet. Can be deprecated once https://github.com/kubernetes/kubernetes/issues/23920
+    # is merged
+    hostNetwork: false
+
+    ## Required only if defaultBackend.enabled = false
+    ## Must be <namespace>/<service_name>
+    ##
+    defaultBackendService: ""
+
+    ## Optionally specify the secret name for default SSL certificate
+    ## Must be <namespace>/<secret_name>
+    ##
+    defaultSSLCertificate: ""
+
+    ## Election ID to use for status update
+    ##
+    electionID: ingress-controller-leader
+
+    ## Name of the ingress class to route through this controller
+    ##
+    ingressClass: nginx
+
+    # labels to add to the pod container metadata
+    podLabels: {}
+    #  key: value
+
+    ## Allows customization of the external service
+    ## the ingress will be bound to via DNS
+    publishService:
+      enabled: false
+      ## Allows overriding of the publish service to bind to
+      ## Must be <namespace>/<service_name>
+      ##
+      pathOverride: ""
+
+    ## Limit the scope of the controller
+    ##
+    scope:
+      enabled: false
+      namespace: ""   # defaults to .Release.Namespace
+
+    extraArgs: {}
+
+    ## Additional environment variables to set
+    ##
+    extraEnvs: {}
+
+    ## DaemonSet or Deployment
+    ##
+    kind: Deployment
+
+    # The update strategy to apply to the Deployment or DaemonSet
+    ##
+    updateStrategy: {}
+    #  rollingUpdate:
+    #    maxUnavailable: 1
+    #  type: RollingUpdate
+
+    ## Node tolerations for server scheduling to nodes with taints
+    ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    ##
+    tolerations: []
+    #  - key: "key"
+    #    operator: "Equal|Exists"
+    #    value: "value"
+    #    effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+    ## Node labels for controller pod assignment
+    ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+    ##
+    nodeSelector: {}
+
+    ## Annotations to be added to controller pods
+    ##
+    podAnnotations: {}
+
+    replicaCount: 1
+
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 64Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 64Mi
+
+    autoscaling:
+      enabled: false
+    #  minReplicas: 1
+    #  maxReplicas: 11
+    #  targetAverageUtilization: 50
+
+    ## Override NGINX template
+    customTemplate:
+      configMapName: ""
+      configMapKey: ""
+
+    service:
+      annotations: {}
+      clusterIP: ""
+
+      ## List of IP addresses at which the controller services are available
+      ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+      ##
+      externalIPs: []
+
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+
+      ## Set external traffic policy to: "Local" to preserve source IP on
+      ## providers supporting it
+      ## Ref: https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-typeloadbalancer
+      externalTrafficPolicy: ""
+
+      healthCheckNodePort: 0
+
+      targetPorts:
+        http: 80
+        https: 443
+
+      type: LoadBalancer
+
+      # type: NodePort
+      # nodePorts:
+      #   http: 32080
+      #   https: 32443
+      nodePorts:
+        http: ""
+        https: ""
+
+    stats:
+      enabled: false
+
+      service:
+        annotations: {}
+        clusterIP: ""
+
+        ## List of IP addresses at which the stats service is available
+        ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+        ##
+        externalIPs: []
+
+        loadBalancerIP: ""
+        loadBalancerSourceRanges: []
+        servicePort: 18080
+        type: ClusterIP
+
+    lifecycle: {}
+
+  ## Rollback limit
+  ##
+  revisionHistoryLimit: 10
+
+  ## Default 404 backend
+  ##
+  defaultBackend:
+
+    ## If false, controller.defaultBackendService must be provided
+    ##
+    enabled: true
+
+    name: default-backend
+    image:
+      repository: gcr.io/google_containers/defaultbackend
+      tag: "1.3"
+      pullPolicy: IfNotPresent
+
+    extraArgs: {}
+
+    ## Node tolerations for server scheduling to nodes with taints
+    ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    ##
+    tolerations: []
+    #  - key: "key"
+    #    operator: "Equal|Exists"
+    #    value: "value"
+    #    effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+    # labels to add to the pod container metadata
+    podLabels: {}
+    #  key: value
+
+    ## Node labels for default backend pod assignment
+    ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+    ##
+    nodeSelector: {}
+
+    ## Annotations to be added to default backend pods
+    ##
+    podAnnotations: {}
+
+    replicaCount: 1
+
+    resources: {}
+    # limits:
+    #   cpu: 10m
+    #   memory: 20Mi
+    # requests:
+    #   cpu: 10m
+    #   memory: 20Mi
+
+    service:
+      annotations: {}
+      clusterIP: ""
+
+      ## List of IP addresses at which the default backend service is available
+      ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+      ##
+      externalIPs: []
+
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 80
+      type: ClusterIP
+
+  ## Enable RBAC as per https://github.com/kubernetes/ingress/tree/master/examples/rbac/nginx and https://github.com/kubernetes/ingress/issues/266
+  rbac:
+    create: false
+    serviceAccountName: default
+
+  ## If controller.stats.enabled = true, Prometheus metrics will be exported
+  ## Ref: https://github.com/hnlq715/nginx-vts-exporter
+  ##
+  statsExporter:
+    name: stats-exporter
+    image:
+      repository: sophos/nginx-vts-exporter
+      tag: v0.6
+      pullPolicy: IfNotPresent
+
+    endpoint: /metrics
+    extraArgs: {}
+    metricsNamespace: nginx
+    statusPage: http://localhost:18080/nginx_status/format/json
+
+    resources: {}
+    # limits:
+    #   cpu: 10m
+    #   memory: 20Mi
+    # requests:
+    #   cpu: 10m
+    #   memory: 20Mi
+
+    service:
+      annotations: {}
+      clusterIP: ""
+
+      ## List of IP addresses at which the stats-exporter service is available
+      ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+      ##
+      externalIPs: []
+
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 9913
+      type: ClusterIP
+
+  # TCP service key:value pairs
+  # Ref: https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/tcp
+  ##
+  tcp: 
+    5000: "default/test-docker-registry:5000"
+  #  8080: "default/example-tcp-svc:9000"
+
+  # UDP service key:value pairs
+  # Ref: https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/udp
+  ##
+  udp: {}
+  #  53: "kube-system/kube-dns:53"
+

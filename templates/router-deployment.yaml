@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "tsuru.fullname" . }}-kubernetes-router
+  labels:
+    app: {{ template "tsuru.name" . }}-kubernetes-router
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicas.router }} 
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ template "tsuru.name" . }}-kubernetes-router
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-kubernetes-router
+        image: tsuru/kubernetes-router
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8077
+            scheme: HTTP
+          timeoutSeconds: 5
+        command: ["./kubernetes-router"]
+        args: ["-v", "3", "-ingress-mode"]
+        ports:
+        - containerPort: 8077
