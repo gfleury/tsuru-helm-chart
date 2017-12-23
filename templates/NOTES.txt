@@ -1,19 +1,23 @@
-1. Get the application URL by running these commands:
+{{- $domain := .Values.ingress.domain -}}
+Congratulations, you have Tsuru running. This configuration
+1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
+  export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+  echo $LB_HOSTNAME
+
+2. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl exec -it $POD_NAME tsurud root-user-create admin@example.com
+
+3. Add the new tsuru target to yout tsuru client cli:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
-  http://{{ . }}
+  tsuru target-add -s default http://{{ . }}.{{ $domain }}
 {{- end }}
-{{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "tsuru.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "LoadBalancer" .Values.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get svc -w {{ template "tsuru.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "tsuru.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  echo http://$SERVICE_IP:{{ .Values.service.externalPort }}
-{{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl port-forward $POD_NAME 8080:{{ .Values.service.internalPort }}
 {{- end }}
+
+4. Login into tsuru 
+  tsuru login admin@example.com
+
+5. Create and deploy your first application
+  tsuru create-app dashboard
+  tsuru app-deploy -a dashboard -i tsuru/dashboard  

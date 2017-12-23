@@ -1,6 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $serviceName := include "tsuru.fullname" . -}}
 {{- $servicePort := .Values.service.externalPort -}}
+{{- $domain := .Values.ingress.domain -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -17,7 +18,7 @@ metadata:
 spec:
   rules:
     {{- range $host := .Values.ingress.hosts }}
-    - host: {{ $host }}
+    - host: {{ $host }}.{{ $domain }}
       http:
         paths:
           - path: /
