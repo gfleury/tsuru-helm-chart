@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}-kubernetes-router
-        image: tsuru/kubernetes-router
+        image: gfleury/kubernetes-router
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -28,6 +28,6 @@ spec:
             scheme: HTTP
           timeoutSeconds: 5
         command: ["./kubernetes-router"]
-        args: ["-v", "3", "-ingress-mode"]
+        args: ["-v", "3", "-ingressnginx-mode"]
         ports:
         - containerPort: 8077
