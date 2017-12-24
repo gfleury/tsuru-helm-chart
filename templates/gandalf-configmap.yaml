@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
 data:
   TSURU_TOKEN: ""
---
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
