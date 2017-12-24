@@ -4,20 +4,25 @@ Congratulations, you have Tsuru running. This configuration
   export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
   echo $LB_HOSTNAME
 
-2. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
+2. Update gandalf configMap TSURU_TOKEN:
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl patch configmap {{ .Release.Name }}-{{ template "tsuru.name" . }}-gandalf-env-var -p "{\"data\":{\"TSURU_TOKEN\":\"$(kubectl exec $POD_NAME tsurud token)\"}}"
+  kubectl delete pod $(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }}-gandalf,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+
+3. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   kubectl exec -it $POD_NAME tsurud root-user-create admin@example.com
 
-3. Add the new tsuru target to yout tsuru client cli:
+4. Add the new tsuru target to yout tsuru client cli:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   tsuru target-add -s default http://{{ . }}.{{ $domain }}
 {{- end }}
 {{- end }}
 
-4. Login into tsuru 
+5. Login into tsuru 
   tsuru login admin@example.com
 
-5. Create and deploy your first application
+6. Add the Kubernete cluster to Tsuru 
   tsuru create-app dashboard
   tsuru app-deploy -a dashboard -i tsuru/dashboard  
