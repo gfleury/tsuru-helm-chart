@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}-gandalf
-        image: gfleury/gandalf
+        image: tsuru/gandalf
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -44,7 +44,7 @@ spec:
           - name: MONGODB_ADDR
             value: {{ .Release.Name }}-mongodb-replicaset
           - name: MONGODB_PORT
-            value: 27017
+            value: "27017"
           - name: TSURU_HOST
             value: http://{{ template "tsuru.fullname" . }}:{{ .Values.service.port }}
       volumes:
