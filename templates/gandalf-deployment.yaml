@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "tsuru.fullname" . }}-gandalf
+  labels:
+    app: {{ template "tsuru.name" . }}-gandalf
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1 
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ template "tsuru.name" . }}-gandalf
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-gandalf
+        image: gfleury/gandalf
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8000
+            scheme: HTTP
+          timeoutSeconds: 5
+        command: ["/entrypoint.sh"]
+        args: []
+        ports:
+        - containerPort: 8000
+        - containerPort: 22
+        volumeMounts:
+          - name: "{{ template "tsuru.fullname" . }}-gandalf-git-hook
+            mountPath: "/home/git/bare-template/hooks"
+        env:
+          - name: TSURU_TOKEN
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "tsuru.fullname" . }}-gandalf-env-var
+                key: TSURU_TOKEN
+          - name: MONGODB_ADDR
+            value: {{ .Release.Name }}-mongodb-replicaset
+          - name: MONGODB_PORT
+            value: 27017
+          - name: TSURU_HOST
+            value: http://{{ template "tsuru.fullname" . }}:{{ .Values.service.port }}
+      volumes:
+        - name: {{ template "tsuru.fullname" . }}-gandalf-git-hook
+          configMap:
+            name: {{ template "tsuru.fullname" . }}-gandalf-git-hook
