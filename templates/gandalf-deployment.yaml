@@ -33,7 +33,7 @@ spec:
         - containerPort: 8000
         - containerPort: 22
         volumeMounts:
-          - name: "{{ template "tsuru.fullname" . }}-gandalf-git-hook
+          - name: "{{ template "tsuru.fullname" . }}-gandalf-git-hook"
             mountPath: "/home/git/bare-template/hooks"
         env:
           - name: TSURU_TOKEN
