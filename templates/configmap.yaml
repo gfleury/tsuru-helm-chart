@@ -11,7 +11,9 @@ data:
   tsuru.conf: |-
     listen: "0.0.0.0:{{ .Values.service.port}}"
     host: http://{{ template "tsuru.fullname" . }}:{{ .Values.service.port}}
-    repo-manager: none
+    repo-manager: gandalf
+    git:
+      api-server: http://{{ template "tsuru.fullname" . }}-gandalf:8000
     database:
       url: {{ .Release.Name }}-mongodb-replicaset:27017
       name: tsuru
