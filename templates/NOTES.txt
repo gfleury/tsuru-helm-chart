@@ -40,4 +40,4 @@
 
 ## 7. Create and deploy first application 
   tsuru create-app dashboard
-  tsuru app-deploy -a dashboard -i tsuru/dashboard  
+  tsuru app-deploy -a dashboard -i tsuru/dashboard
