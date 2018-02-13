@@ -1,5 +1,5 @@
 {{- $domain := .Values.ingress.domain -}}
-{{- $admin := .Values.kube-lego.config.LEGO_EMAIL -}}
+{{- $admin := index .Values "kube-lego" "config" "LEGO_EMAIL" -}}
 ## Congratulations, you have Tsuru running. This configuration
 ## 1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
   export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
