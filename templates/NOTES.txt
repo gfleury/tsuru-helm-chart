@@ -1,28 +1,43 @@
 {{- $domain := .Values.ingress.domain -}}
-Congratulations, you have Tsuru running. This configuration
-1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
+{{- $admin := .Values.kube-lego.config.LEGO_EMAIL -}}
+## Congratulations, you have Tsuru running. This configuration
+## 1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
   export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
   echo $LB_HOSTNAME
 
-2. Update gandalf configMap TSURU_TOKEN:
+## 2. Update gandalf configMap TSURU_TOKEN:
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   kubectl patch configmap {{ .Release.Name }}-{{ template "tsuru.name" . }}-gandalf-env-var -p "{\"data\":{\"TSURU_TOKEN\":\"$(kubectl exec $POD_NAME tsurud token)\"}}"
   kubectl delete pod $(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }}-gandalf,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
 
-3. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
+## 3. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  kubectl exec -it $POD_NAME tsurud root-user-create admin@example.com
+  kubectl exec -it $POD_NAME tsurud root-user-create {{ $admin }}
 
-4. Add the new tsuru target to yout tsuru client cli:
+## 4. Add the new tsuru target to yout tsuru client cli:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   tsuru target-add -s default http://{{ . }}.{{ $domain }}
 {{- end }}
 {{- end }}
 
-5. Login into tsuru 
-  tsuru login admin@example.com
+## 5. Login into tsuru 
+  tsuru login {{ $admin }}
 
-6. Add the Kubernete cluster to Tsuru 
+## 6. Add the Kubernete cluster to Tsuru
+  tsuru pool-add builder
+  tsuru node-add --register address=http://{{ .Release.Name }}-tsuru-docker-builder:2375 pool=builder
+  tsuru node-update --enable http://{{ .Release.Name }}-tsuru-docker-builder:2375
+  tsuru -v 2 platform-add python
+
+## Minikube:
+
+  tsuru cluster-add default kubernetes --addr=https://kubernetes --default --cacert ~/.minikube/ca.crt --clientkey ~/.minikube/client.key --clientcert  ~/.minikube/client.crt
+
+## Kops AWS:
+
+  tsuru cluster-add default kubernetes --addr=https://kubernetes --default --cacert ~/ca.crt --custom password=password --custom username=admin
+
+## 7. Create and deploy first application 
   tsuru create-app dashboard
   tsuru app-deploy -a dashboard -i tsuru/dashboard  
