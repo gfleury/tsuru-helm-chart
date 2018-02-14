@@ -356,7 +356,7 @@ nginx-ingress:
       #   https: ""
 
     stats:
-      enabled: false
+      enabled: true 
 
       service:
         annotations: {}
