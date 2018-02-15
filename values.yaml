@@ -452,7 +452,7 @@ nginx-ingress:
     name: stats-exporter
     image:
       repository: sophos/nginx-vts-exporter
-      tag: v0.6
+      tag: v0.8.3
       pullPolicy: IfNotPresent
 
     endpoint: /metrics
