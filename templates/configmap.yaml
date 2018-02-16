@@ -30,7 +30,7 @@ data:
         mongo-url: {{ .Release.Name }}-mongodb-replicaset:27017
         mongo-database: cluster
       collection: docker
-      registry: {{ .Release.Name }}-docker-registry:5000
+      registry: registry.prod.us.cloud.domain.com:443
       repository-namespace: tsuru
       router: ingress-router
       deploy-cmd: /var/lib/tsuru/deploy
@@ -38,7 +38,7 @@ data:
         bin: /var/lib/tsuru/start
         port: "8888"
       auto-scale:
-        enabled: true
+        enabled: false 
         run-interval: 60
     routers:
       ingress-router:
