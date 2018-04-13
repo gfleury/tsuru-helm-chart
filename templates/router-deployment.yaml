@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicas.router }} 
+  replicas: {{ .Values.replicas.router }}
   strategy:
     type: Recreate
   template:

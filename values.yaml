@@ -1,19 +1,19 @@
 ##
 ## Default values for tsuru.
 ##
-replicas: 
-  router: 1 
+replicas:
+  router: 1
 image:
-  repository: gfleury/tsuru-api 
-  tag: latest 
-  pullPolicy: Always 
+  repository: tsuru/api
+  tag: latest
+  pullPolicy: Always
 service:
-  name: tsuru-api 
+  name: tsuru-api
   type: ClusterIP
   port: 8080
   externalPort: 8080
 ingress:
-  enabled: true 
+  enabled: true
   # Default tsuru domain name to create vhosts. APPPNAME.DOMAIN
   domain: local
   # Used to create an Ingress record.
@@ -25,7 +25,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 2000m
   tls:
     # Secrets must be manually created in the namespace.
-    - secretName: tsuru-tls 
+    - secretName: tsuru-tls
       hosts:
         - tsuru.prod.us.cloud.domain.com
 resources: {}
@@ -60,7 +60,7 @@ mongodb-replicaset:
 
   # Specs for the Docker image for the init container that establishes the replica set
   installImage:
-    name: gcr.io/google_containers/mongodb-install 
+    name: gcr.io/google_containers/mongodb-install
     tag: 0.5
     pullPolicy: IfNotPresent
 
@@ -152,7 +152,7 @@ docker-registry:
     type: ClusterIP
     port: 5000
   ingress:
-    enabled: true 
+    enabled: true
     # Used to create an Ingress record.
     hosts:
       - registry.prod.us.cloud.domain.com
@@ -218,7 +218,7 @@ nginx-ingress:
   controller:
     name: controller
     image:
-      repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller 
+      repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
       tag: "0.10.2"
       pullPolicy: IfNotPresent
 
@@ -254,7 +254,7 @@ nginx-ingress:
     ## Allows customization of the external service
     ## the ingress will be bound to via DNS
     publishService:
-      enabled: true 
+      enabled: true
       ## Allows overriding of the publish service to bind to
       ## Must be <namespace>/<service_name>
       ##
@@ -356,7 +356,7 @@ nginx-ingress:
       #   https: ""
 
     stats:
-      enabled: true 
+      enabled: true
 
       service:
         annotations: {}
