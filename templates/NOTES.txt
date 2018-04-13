@@ -2,7 +2,7 @@
 {{- $admin := index .Values "kube-lego" "config" "LEGO_EMAIL" -}}
 ## Congratulations, you have Tsuru running. This configuration
 ## 1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
-  export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+  export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
   echo $LB_HOSTNAME
 
 ## 2. Update gandalf configMap TSURU_TOKEN:
@@ -21,7 +21,7 @@
 {{- end }}
 {{- end }}
 
-## 5. Login into tsuru 
+## 5. Login into tsuru
   tsuru login {{ $admin }}
 
 ## 6. Add the Kubernete cluster to Tsuru
@@ -38,6 +38,6 @@
 
   tsuru cluster-add default kubernetes --addr=https://kubernetes --default --cacert ~/ca.crt --custom password=password --custom username=admin
 
-## 7. Create and deploy first application 
+## 7. Create and deploy first application
   tsuru create-app dashboard
   tsuru app-deploy -a dashboard -i tsuru/dashboard
