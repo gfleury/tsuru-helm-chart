@@ -17,6 +17,7 @@ spec:
         app: {{ template "tsuru.name" . }}-kubernetes-router
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: kubernetes-router
       containers:
       - name: {{ .Chart.Name }}-kubernetes-router
         image: gfleury/kubernetes-router
