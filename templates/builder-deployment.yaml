@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicas.builder }} 
+  replicas: {{ .Values.replicas.builder }}
   strategy:
     type: Recreate
   template:
@@ -24,11 +24,11 @@ spec:
           imagePullPolicy: Always
           command: ['docker', 'run', '-p', '80:80', 'httpd:latest']
           resources:
-            requests:  
-                cpu: 10m  
-                memory: 256Mi 
+            requests:
+                cpu: 10m
+                memory: 256Mi
           ports:
-          - containerPort: 2375 
+          - containerPort: 2375
           env:
             - name: DOCKER_HOST
               value: tcp://localhost:2375

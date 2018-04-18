@@ -38,7 +38,7 @@ data:
         bin: /var/lib/tsuru/start
         port: "8888"
       auto-scale:
-        enabled: false 
+        enabled: false
         run-interval: 60
     routers:
       ingress-router:

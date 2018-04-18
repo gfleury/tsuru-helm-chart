@@ -15,6 +15,7 @@ spec:
         app: {{ template "tsuru.name" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: tsuru-api
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
