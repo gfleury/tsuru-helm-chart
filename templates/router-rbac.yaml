@@ -1,11 +1,15 @@
+{{- if .Values.rbac.create -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: kubernetes-router
+  name: {{ template "tsuru.fullname" . }}-kubernetes-router
 rules:
 - apiGroups: ["extensions"]
   resources: ["ingresses"]
   verbs: ["get", "create", "update", "delete"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "delete"]
 - apiGroups: [""]
   resources: ["services"]
   verbs: ["list"]
@@ -16,12 +20,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: kubernetes-router
+  name: {{ template "tsuru.fullname" . }}-kubernetes-router
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: kubernetes-router
+  name: {{ template "tsuru.fullname" . }}-kubernetes-router
 subjects:
 - kind: ServiceAccount
-  name: kubernetes-router
+  name: {{ template "tsuru.fullname" . }}-kubernetes-router
   namespace: default
+{{- end -}}
