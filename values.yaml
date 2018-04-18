@@ -39,7 +39,8 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
-
+rbac:
+  create: true
 
 
 ##
@@ -60,14 +61,14 @@ mongodb-replicaset:
 
   # Specs for the Docker image for the init container that establishes the replica set
   installImage:
-    name: gcr.io/google_containers/mongodb-install
-    tag: 0.5
+    name: k8s.gcr.io/mongodb-install
+    tag: 0.6
     pullPolicy: IfNotPresent
 
   # Specs for the MongoDB image
   image:
     name: mongo
-    tag: 3.4
+    tag: 3.6
     pullPolicy: IfNotPresent
 
   # Annotations to be added to MongoDB pods
@@ -219,7 +220,7 @@ nginx-ingress:
     name: controller
     image:
       repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-      tag: "0.10.2"
+      tag: "0.12.0"
       pullPolicy: IfNotPresent
 
     config: {}

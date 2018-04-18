@@ -14,15 +14,40 @@ To install the chart with the release name `my-release`:
 
 ```bash
 $ helm dep up tsuru-helm-chart
-$ helm install --name my-release tsuru-helm-chart 
+$ helm install --name my-release tsuru-helm-chart
 ```
 
-## Minikube 
+## Minikube
 
-Use branch minikube to use Tsuru on minikube. 
+Install the ingress addon on minikube.
 
 ```bash
-$ tsuru target-add default http://tsuru.local:32080/
+$ minikube addons enable ingress
+$ tsuru target-add default http://tsuru.local/
 $ tsuru cluster-add default kubernetes --addr https://kubernetes --default --cacert ~/.minikube/ca.crt --clientkey /root/.minikube/client.key --clientcert  /root/.minikube/client.crt
 $ tsuru node-list
+```
+
+## ACME/Kube-lego (Automatic Certificate Management Environment)
+
+By default values will keep using the testing api endpoint for Let's encrypt, that means the certificates will not be valid.
+
+```bash
+helm install --name my-release --set ingress.domain=prod.us.cloud.domain.com,kube-lego.config.LEGO_EMAIL=admin@domain.com,kube-lego.config.LEGO_URL=https://acme-v01.api.letsencrypt.org/directory tsuru-helm-chart
+```
+
+Then while creating the apps add the --router-opts tls-acme=true. This will enable ACME with Let's Encrypt.
+
+```bash
+tsuru app-create tsuru-dashboard python --router-opts tls-acme=true
+```
+
+You can still create the chart with ACME support but use own certificates on the application.
+
+## Disable RBAC
+
+By default Tsuru.io will be deployed with serviceaccounts with the necessary access. That can be disabled by the value rbac.create=false.
+
+```bash
+helm install --name my-release --set rbac.create=false tsuru-helm-chart
 ```

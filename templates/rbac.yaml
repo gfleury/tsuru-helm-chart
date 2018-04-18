@@ -1,7 +1,8 @@
+{{- if .Values.rbac.create -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: tsuru-api
+  name: {{ template "tsuru.fullname" . }}-tsuru-api
 rules:
 - apiGroups: [""]
   resources: ["nodes"]
@@ -34,12 +35,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: tsuru-api
+  name: {{ template "tsuru.fullname" . }}-tsuru-api
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: tsuru-api
+  name: {{ template "tsuru.fullname" . }}-tsuru-api
 subjects:
 - kind: ServiceAccount
-  name: tsuru-api
+  name: {{ template "tsuru.fullname" . }}-tsuru-api
   namespace: default
+{{- end -}}
