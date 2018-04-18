@@ -496,3 +496,5 @@ kube-lego:
     ## Staging: https://acme-staging.api.letsencrypt.org/directory
     ##
     LEGO_URL: https://acme-staging.api.letsencrypt.org/directory
+  rbac:
+    create: true

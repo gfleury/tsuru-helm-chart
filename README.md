@@ -23,7 +23,13 @@ Install the ingress addon on minikube.
 
 ```bash
 $ minikube addons enable ingress
-$ helm install --name my-release tsuru-helm-chart --set nginx-ingress.controller.service.type=NodePort,ingress.domain=local.$(minikube ip).nip.io
+$ helm install --name my-release tsuru-helm-chart --set nginx-ingress.controller.service.type=NodePort \
+                                                  --set ingress.domain=local.$(minikube ip).nip.io \
+                                                  --set ingress.tls[0].hosts[0]=tsuru.local.$(minikube ip).nip.io \
+                                                  --set docker-registry.ingress.hosts[0]=registry.local.$(minikube ip).nip.io \
+                                                  --set docker-registry.ingress.tls[0].hosts[0]=registry.local.$(minikube ip).nip.io \
+                                                  --set ingress.tls[0].secretName=tsuru-api \
+                                                  --set docker-registry.ingress.tls[0].secretName=registry-tls
 $ tsuru target-add default http://tsuru.local.$(minikube ip).nip.io/
 $ tsuru cluster-add default kubernetes --addr https://kubernetes --default --cacert ~/.minikube/ca.crt --clientkey /root/.minikube/client.key --clientcert  /root/.minikube/client.crt
 $ tsuru node-list
