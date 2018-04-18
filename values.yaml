@@ -47,7 +47,7 @@ rbac:
 ## MongoDB Confinguration Values
 ##
 mongodb-replicaset:
-  replicaSet: rs0
+  replicaSetName: rs0
   replicas: 3
   port: 27017
 
@@ -119,21 +119,6 @@ mongodb-replicaset:
 
   # Entries for the MongoDB config file
   configmap:
-    storage:
-      dbPath: /data/db
-    net:
-      port: 27017
-      # Uncomment for TLS support
-      # ssl:
-      #   mode: requireSSL
-      #   CAFile: /ca/tls.crt
-      #   PEMKeyFile: /work-dir/mongo.pem
-    replication:
-      replSetName: rs0
-    # Uncomment for TLS support or keyfile access control without TLS
-    # security:
-    #   authorization: enabled
-    #   keyFile: /keydir/key.txt
 
 
 ##
