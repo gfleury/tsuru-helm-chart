@@ -30,7 +30,7 @@ data:
         mongo-url: {{ .Release.Name }}-mongodb-replicaset:27017
         mongo-database: cluster
       collection: docker
-      registry: {{ template "tsuru.fullname" . }}-docker-registry:5000
+      registry: {{ .Release.Name }}-docker-registry:5000
       repository-namespace: tsuru
       router: ingress-router
       deploy-cmd: /var/lib/tsuru/deploy
