@@ -30,7 +30,16 @@ data:
         mongo-url: {{ .Release.Name }}-mongodb-replicaset:27017
         mongo-database: cluster
       collection: docker
+{{ if eq .Values.registry.enabled true }}
+      registry: {{ .Values.registry.url }}
+{{ if eq .Values.registry.auth.enabled true }}
+      registry-auth:
+        username: {{ .Values.registry.auth.username }}
+        password: {{ .Values.registry.auth.password }}
+{{ end }}
+{{ else }}
       registry: {{ .Release.Name }}-docker-registry:5000
+{{ end }}
       repository-namespace: tsuru
       router: ingress-router
       deploy-cmd: /var/lib/tsuru/deploy

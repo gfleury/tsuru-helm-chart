@@ -7,6 +7,10 @@ image:
   repository: tsuru/api
   tag: latest
   pullPolicy: Always
+registry:
+  enabled: false
+  auth:
+    enabled: false
 service:
   name: tsuru-api
   type: ClusterIP
@@ -205,7 +209,7 @@ nginx-ingress:
     name: controller
     image:
       repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-      tag: "0.12.0"
+      tag: "0.14.0"
       pullPolicy: IfNotPresent
 
     config: {}
