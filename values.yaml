@@ -100,7 +100,7 @@ mongodb-replicaset:
     # storageClass: "-"
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 5Gi
     annotations: {}
 
   # Annotations to be added to the service
@@ -481,20 +481,18 @@ nginx-ingress:
   udp: {}
   #  53: "kube-system/kube-dns:53"
 
-
-
-## kube-lego configuration
-## Ref: https://github.com/jetstack/kube-lego
-##
-kube-lego:
-  config:
-    ## Email address to use for registration with Let's Encrypt
-    ##
-    LEGO_EMAIL: foo@example.com
-    ## Let's Encrypt API endpoint
-    ## Production: https://acme-v01.api.letsencrypt.org/directory
-    ## Staging: https://acme-staging.api.letsencrypt.org/directory
-    ##
-    LEGO_URL: https://acme-staging.api.letsencrypt.org/directory
+cert-manager:
+  replicaCount: 1
+  createCustomResource: true
+  certificateResourceShortNames: ["cert", "certs"]
   rbac:
     create: true
+  serviceAccount:
+    create: true
+  ingressShim:
+    enabled: true
+    extraArgs:
+      # Use these flags to specify the default Issuer/ClusterIssuer
+      # (IMPORTANT: You need to create this Issuer/ClusterIssuer resource yourself)
+      - --default-issuer-name=letsencrypt-prod
+      - --default-issuer-kind=ClusterIssuer
