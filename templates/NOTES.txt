@@ -21,7 +21,7 @@
 {{- end }}
 
 ## 5. Login into tsuru
-  tsuru login {{ $admin }}
+  tsuru login admin@example.com
 
 ## 6. Add the Kubernete cluster to Tsuru
   tsuru pool-add builder
