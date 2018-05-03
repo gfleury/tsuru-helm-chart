@@ -1,5 +1,4 @@
 {{- $domain := .Values.ingress.domain -}}
-{{- $admin := index .Values "kube-lego" "config" "LEGO_EMAIL" -}}
 ## Congratulations, you have Tsuru running. This configuration
 ## 1. Point the domain *.{{ $domain }} to the externel IP from {{ .Release.Name }}-nginx-ingress-controller: (Could take a while to provision)
   export LB_HOSTNAME=$(kubectl get services {{ .Release.Name }}-nginx-ingress-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
@@ -12,7 +11,7 @@
 
 ## 3. Create the admin user password on tsuru: (Could take a few minutes to deploy everything)
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  kubectl exec -it $POD_NAME tsurud root-user-create {{ $admin }}
+  kubectl exec -it $POD_NAME tsurud root-user-create admin@example.com # CHANGE IT TO YOUR ADMIN USER #
 
 ## 4. Add the new tsuru target to yout tsuru client cli:
 {{- if .Values.ingress.enabled }}
