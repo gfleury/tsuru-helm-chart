@@ -5,6 +5,9 @@ metadata:
   name: {{ template "tsuru.fullname" . }}-tsuru-api
 rules:
 - apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "delete"]
+- apiGroups: [""]
   resources: ["nodes"]
   verbs: ["list", "get", "update"]
 - apiGroups: [""]
