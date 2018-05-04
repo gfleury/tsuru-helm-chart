@@ -30,9 +30,9 @@
   tsuru -v 2 platform-add python
 
 ## Add Kubernetes Cluster to Tsuru
-  
-  export K8S_TOKEN=$(kubectl get secret $(kubectl get sa -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}"  -o jsonpath="{.items[0].secrets[0].name}") -o jsonpath="{.data.token}" | base64 -D)
-  kubectl get secret -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}" -o jsonpath="{.data.ca\.crt}" | base64 -D > ca.crt
+  export SA_NAME=$(kubectl get sa -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}"  -o jsonpath="{.items[0].secrets[0].name}")
+  export K8S_TOKEN=$(kubectl get secret $SA_NAME -o jsonpath="{.data.token}" | base64 -D)
+  kubectl get secret $SA_NAME -o jsonpath="{.data.ca\.crt}" | base64 -D > ca.crt
   tsuru cluster-add {{ .Release.Name }} kubernetes --addr=https://kubernetes --default --cacert ca.crt --custom token=$K8S_TOKEN
 
 ## Minikube:
