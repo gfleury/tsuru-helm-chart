@@ -29,6 +29,11 @@
   tsuru node-update --enable http://{{ .Release.Name }}-tsuru-docker-builder:2375
   tsuru -v 2 platform-add python
 
+## Add Kubernetes Cluster to Tsuru
+  export K8S_TOKEN=$(kubectl get secret -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}" -o jsonpath="{.items[0].data.token}" | base64 -D)
+  kubectl get secret -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}" -o jsonpath="{.items[0].data.ca\.crt}" | base64 -D > ca.crt
+  tsuru cluster-add {{ .Release.Name }} kubernetes --addr=https://kubernetes --default --cacert ca.crt --custom token=$K8S_TOKEN
+
 ## Minikube:
 
   tsuru cluster-add default kubernetes --addr=https://kubernetes --default --cacert ~/.minikube/ca.crt --clientkey ~/.minikube/client.key --clientcert  ~/.minikube/client.crt
