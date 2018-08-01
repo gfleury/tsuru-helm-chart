@@ -34,7 +34,7 @@ rules:
   resources: ["services"]
   verbs: ["get", "create", "delete"]
 - apiGroups: ["apps"]
-  resources: ["deployments"]
+  resources: ["deployments", "deployments/rollback"]
   verbs: ["get", "create", "update", "delete"]
 - apiGroups: ["apps"]
   resources: ["daemonsets"]
