@@ -9,6 +9,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
+- apiGroups: ["batch"]
+  resources: ["cronjobs"]
+  verbs: ["get", "list", "create", "update", "delete"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list", "create", "update", "delete"]
