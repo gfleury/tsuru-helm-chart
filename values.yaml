@@ -502,6 +502,8 @@ cert-manager:
   serviceAccount:
     create: true
   ingressShim:
+    defaultIssuerName: letsencrypt-prod
+    defaultIssuerKind: ClusterIssuer
     enabled: true
     extraArgs:
       # Use these flags to specify the default Issuer/ClusterIssuer
