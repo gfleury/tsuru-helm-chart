@@ -62,5 +62,5 @@ helm install --name my-release --set rbac.create=false tsuru-helm-chart
 ## Updating Chart to use latest CertManager
 
 ```
-helm upgrade integration-eu  ./  --reuse-values    --set cert-manager.webhook.enabled=false --set cert-manager.cainjector.enabled=false --set ingressShim.defaultIssuerKind=ClusterIssuer --set ingressShim.defaultIssuerName=letsencrypt-prod
+helm upgrade tsuru ./  --reuse-values    --set cert-manager.webhook.enabled=false --set cert-manager.cainjector.enabled=false --set ingressShim.defaultIssuerKind=ClusterIssuer --set ingressShim.defaultIssuerName=letsencrypt-prod --set cert-manager.image.tag=v0.8.0
 ```
