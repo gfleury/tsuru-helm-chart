@@ -10,10 +10,21 @@ This chart will do the following:
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+Install dependecies:
+
+To install cert-manager follow this steps first:
+
+- https://docs.cert-manager.io/en/latest/getting-started/install/kubernetes.html#steps
+
+then:
 
 ```bash
 $ helm dep up tsuru-helm-chart
+```
+
+To install the chart with the release name `my-release`:
+
+```bash
 $ helm install --name my-release tsuru-helm-chart
 ```
 
