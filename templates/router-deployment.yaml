@@ -31,6 +31,6 @@ spec:
             scheme: HTTP
           timeoutSeconds: 5
         command: ["./kubernetes-router"]
-        args: ["-v", "3", "-controller-mode", "ingressNginx", "-ingress-domain", "{{ .Values.ingress.domain }}", "-k8s-namespace", "tsuru" ]
+        args: ["-v", "3", "-controller-modes", "ingress-nginx", "-ingress-domain", "{{ .Values.ingress.domain }}", "-k8s-namespace", "tsuru" ]
         ports:
         - containerPort: 8077
