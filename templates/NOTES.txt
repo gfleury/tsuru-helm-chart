@@ -13,7 +13,7 @@
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "tsuru.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   kubectl exec -it $POD_NAME tsurud root-user-create admin@example.com # CHANGE IT TO YOUR ADMIN USER #
 
-## 4. Add the new tsuru target to yout tsuru client cli:
+## 4. Add the new tsuru target to your tsuru client cli:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   tsuru target-add -s default http://{{ . }}.{{ $domain }}
@@ -23,13 +23,7 @@
 ## 5. Login into tsuru
   tsuru login admin@example.com
 
-## 6. Add the Kubernete cluster to Tsuru
-  tsuru pool-add builder
-  tsuru node-add --register address=http://{{ .Release.Name }}-tsuru-docker-builder:2375 pool=builder
-  tsuru node-update --enable http://{{ .Release.Name }}-tsuru-docker-builder:2375
-  tsuru -v 2 platform-add python
-
-## Add Kubernetes Cluster to Tsuru
+## 6. Add Kubernetes Cluster to Tsuru
   export SA_NAME=$(kubectl get sa -l "app={{ template "tsuru.name" . }}-tsuru-api,release={{ .Release.Name }}"  -o jsonpath="{.items[0].secrets[0].name}")
   export K8S_TOKEN=$(kubectl get secret $SA_NAME -o jsonpath="{.data.token}" | base64 -D)
   kubectl get secret $SA_NAME -o jsonpath="{.data.ca\.crt}" | base64 -D > ca.crt
@@ -44,5 +38,6 @@
   tsuru cluster-add default kubernetes --addr=https://kubernetes --default --cacert ~/ca.crt --custom password=password --custom username=admin
 
 ## 7. Create and deploy first application
+  tsuru platform-add python
   tsuru create-app dashboard
   tsuru app-deploy -a dashboard -i tsuru/dashboard
