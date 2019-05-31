@@ -22,7 +22,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-kubernetes-router
-        image: gfleury/kubernetes-router
+        image: tsuru/kubernetes-router
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
