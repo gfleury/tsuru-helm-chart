@@ -1,3 +1,4 @@
+{{- if eq .Values.gandalf.enabled true }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -75,3 +76,5 @@ data:
     curl -H "Authorization: bearer ${TSURU_TOKEN}" -F "file=@${archive_url}" -F "commit=${COMMIT}" -F "user=${TSURU_USER}" -s -N $url | tee /tmp/deploy-${APP_NAME}.log
     rm /tmp/${ARCHIVE_FILE_NAME}
     tail -1 /tmp/deploy-${APP_NAME}.log | grep -q "^OK$"
+
+{{- end }}

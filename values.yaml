@@ -11,6 +11,8 @@ registry:
   enabled: false
   auth:
     enabled: false
+gandalf:
+  enabled: false
 service:
   name: tsuru-api
   type: ClusterIP
@@ -361,7 +363,7 @@ nginx-ingress:
         loadBalancerSourceRanges: []
         servicePort: 18080
         type: ClusterIP
-    
+
     metrics:
       enabled: true
 
@@ -483,7 +485,7 @@ nginx-ingress:
   # TCP service key:value pairs
   # Ref: https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/tcp
   ##
-  tcp: 
+  tcp:
   #  5000: "default/prod-us-docker-registry:5000"
   #  8080: "default/example-tcp-svc:9000"
 

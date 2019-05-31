@@ -11,9 +11,13 @@ data:
   tsuru.conf: |-
     listen: "0.0.0.0:{{ .Values.service.port}}"
     host: http://{{ template "tsuru.fullname" . }}:{{ .Values.service.port}}
+{{ if eq .Values.gandalf.enabled true }}
     repo-manager: gandalf
     git:
       api-server: http://{{ template "tsuru.fullname" . }}-gandalf:8000
+{{ else }}
+    repo-manager: none
+{{ end }}
     database:
       url: {{ .Release.Name }}-mongodb-replicaset:27017
       name: tsuru
