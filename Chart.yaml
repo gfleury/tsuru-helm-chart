@@ -1,4 +1,4 @@
 apiVersion: v1
-description: A Helm chart for Kubernetes to install Tsuru.io and all his components
+description: A Helm chart for Kubernetes to install Tsuru and all his components
 name: tsuru
 version: 0.1.1

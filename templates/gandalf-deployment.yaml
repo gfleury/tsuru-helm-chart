@@ -1,3 +1,4 @@
+{{- if eq .Values.gandalf.enabled true }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -8,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1 
+  replicas: 1
   strategy:
     type: Recreate
   template:
@@ -51,3 +52,4 @@ spec:
         - name: {{ template "tsuru.fullname" . }}-gandalf-git-hook
           configMap:
             name: {{ template "tsuru.fullname" . }}-gandalf-git-hook
+{{- end }}
