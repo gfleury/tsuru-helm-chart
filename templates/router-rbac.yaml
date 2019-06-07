@@ -44,5 +44,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ template "tsuru.fullname" . }}-kubernetes-router
-  namespace: default
+  namespace: {{ .Release.Namespace }}
 {{- end -}}
