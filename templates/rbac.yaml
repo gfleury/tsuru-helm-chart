@@ -74,5 +74,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ template "tsuru.fullname" . }}-tsuru-api
-  namespace: default
+  namespace: {{ .Release.Namespace }}
 {{- end -}}
